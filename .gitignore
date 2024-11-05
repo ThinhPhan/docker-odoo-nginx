@@ -3,7 +3,6 @@ odoo-db-data/*
 .env
 *.pyc
 .vscode/
-env-sample
 include_utils.sh
 addons/*
 certbot/*
