@@ -84,12 +84,8 @@
 
 ## Documentation 📜
 
-+ <https://docs.docker.com/>
-+ <https://docs.docker.com/compose/>
-+ <https://www.odoo.com/documentation/14.0/>
-+ <https://nginx.org/en/docs/>
-+ <https://www.postgresql.org/docs/>
 + <https://opensourcehustle.com/blog/odoo-erp-1/self-host-odoo-18-ubuntu-24-04-docker-nginx-postgresql-ssl-certbot-8>
++ <https://cystack.net/vi/tutorial/cai-dat-odoo-tren-ubuntu-20-04>
 
 ### Linux Basic Commands 🐧
 
