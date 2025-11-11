@@ -9,9 +9,9 @@ services:
             #- /etc/localtime:/etc/localtime:ro
             # if you want to install additional Python packages, uncomment this line!
             #- ./entrypoint.sh:/entrypoint.sh
-            - ./addons:/mnt/extra-addons/:rw
-            - ./config/odoo:/etc/odoo/:rw
-            - ./odoo-web-data:/var/lib/odoo/:rw
+            - ./addons:/mnt/extra-addons/:rw #to provide Odoo with custom addons
+            - ./config/odoo:/etc/odoo/:rw #to provide Odoo with the config file
+            - ./odoo-web-data:/var/lib/odoo/:rw #to store Odoo data 
         ports:
             - "8069:8069"
             - "8072:8072" # live chat
@@ -19,44 +19,46 @@ services:
             - db
         networks:
           - odoo_network
+    
+    # Used to serve traffic to the Odoo container, and enables secure HTTPS traffic by generating SSL certificates in conjunction with certbot.
     nginx:
         container_name: nginx
         image: nginx:latest
         restart: unless-stopped
         ports:
-            - 8080:80
+            - 80:80
             - 443:443
         volumes:
-            - ./config/nginx/conf:/etc/nginx/conf.d/:rw
-            - ./certbot/conf:/etc/letsencrypt
-            - ./certbot/www:/var/www/certbot
+            - ./config/nginx/conf:/etc/nginx/conf.d/:rw # nginx configs
+            - ./config/nginx/inc:/etc/nginx/inc #  include supplementary nginx configurations
+            - ./config/nginx/ssl:/etc/nginx/ssl # stores SSL certs and DH params.
+            - ./certbot/conf:/etc/letsencrypt # stores Certbot config and certs.
+            - ./certbot/www:/var/www/certbot # webroot used by both Certbot and NGINX for ACME challenge.
         depends_on:
             - "odoo"
         networks:
             - odoo_network
+
+    # Used to generate Let's Encrypt certificates and renew them.
     certbot:
         image: certbot/certbot
         volumes:
-            - ./certbot/conf:/etc/letsencrypt
-            - ./certbot/www:/var/www/certbot
-        command: certonly --webroot -w /var/www/certbot --force-renewal --email youremail@email.com -d domain.com --agree-tos
-        depends_on:
-            - nginx
-        networks:
-          - odoo_network
+            - ./certbot/conf:/etc/letsencrypt # shares certificate files with Nginx.
+            - ./certbot/www:/var/www/certbot # shares the webroot directory with Nginx for successful ACME challenge.
+        
     db:
-      image: postgres:15
+      image: postgres:16
       restart: always # run as a service
       # environment:
       #   - POSTGRES_PASSWORD=odoo
       #   - POSTGRES_USER=odoo
       #   - POSTGRES_DB=postgres
-      #   - PGDATA=/var/lib/postgresql/data/pgdata
+         - PGDATA=/var/lib/postgresql/data/pgdata
       env_file: .env
       ports:
         - "5432:5432"
       volumes:
-        - ./odoo-db-data:/var/lib/postgresql/data/pgdata
+        - ./odoo-db-data:/var/lib/postgresql/data #stores postgresql data on the host machine to remain persistent.
       networks:
         - odoo_network
       logging:
