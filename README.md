@@ -89,6 +89,7 @@
 + <https://www.odoo.com/documentation/14.0/>
 + <https://nginx.org/en/docs/>
 + <https://www.postgresql.org/docs/>
++ <https://opensourcehustle.com/blog/odoo-erp-1/self-host-odoo-18-ubuntu-24-04-docker-nginx-postgresql-ssl-certbot-8>
 
 ### Linux Basic Commands 🐧
 
